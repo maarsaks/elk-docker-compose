@@ -1,0 +1,48 @@
+fields:
+  type: "haproxy"
+
+filebeat.inputs:
+  paths: "/haproxy.log"
+  fields:
+    type: "haproxy"
+
+filebeat.modules:
+- module: haproxy
+  log:
+    enabled: true
+    var.paths: ["/haproxy.log"]
+    var.input: "file"
+    fields:
+      type: "haproxy"
+    output.elasticsearch:
+      hosts: ["elasticsearch:9200"]
+      username: "elastic"
+      password: "password"
+    setup.kibana:
+      host: "kibana:5601"
+
+filebeat.config.modules:
+  path: ${path.config}/modules.d/*.yml
+  reload.enabled: true
+
+setup.template.name: "index-haproxy-%{[beat.version]}"
+setup.template.pattern: "index-haproxy-%{[beat.version]}-*"
+setup.template.overwrite: true
+setup.ilm.overwrite: true
+setup.ilm.enabled: false
+
+setup.template.settings:
+  index.number_of_shards: 3
+
+setup.kibana:
+  host: "http://elasticsearch:5601"
+
+output.elasticsearch:
+  hosts: ["elasticsearch:9200"]
+  index: index-%{[fields.type]:other}-%{+yyyy.MM.dd}
+  username: "elastic"
+  password: "password"
+
+processors:
+  - add_host_metadata: ~
+  - add_cloud_metadata: ~
