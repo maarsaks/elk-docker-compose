@@ -1,4 +1,5 @@
-description: Pipeline for parsing HAProxy http, tcp and default logs. Requires the geoip plugin.
+description: Pipeline for parsing HAProxy http, tcp and default logs. Requires the
+  geoip plugin.
 processors:
 - set:
     field: event.ingested
